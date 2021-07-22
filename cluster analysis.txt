@@ -1,0 +1,98 @@
+#IMPORT LIBRARY
+import numpy as np
+import pandas as pd
+from sklearn.datasets import load_iris
+
+#LOAD DATA
+import os
+os.chdir('C:\\Users\\NEW\\Desktop\\python\\class 8 - cluster analysis')
+data = pd.read_csv('Mall_Customers.csv')
+data
+
+#DATA WRANGLING(pre-process)
+data = data.drop(["CustomerID"],axis = 1)
+
+#equalize the data values
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler()
+X_scaled = scaler.fit_transform(data)
+X_scaled = pd.DataFrame(X_scaled)
+data = X_scaled.copy()
+
+#import libraries
+import numpy as np
+from sklearn.cluster import KMeans 
+from sklearn.metrics import silhouette_score 
+import matplotlib.pyplot as plt
+
+#DATA VISUALIZATION (ELBOW METHOD)
+sse = {}
+for k in range(1, 15):
+    kmeans = KMeans(n_clusters=k, max_iter=1000).fit(data)
+    data["clusters"] = kmeans.labels_
+    #print(data["clusters"])
+    sse[k] = kmeans.inertia_ # Inertia: Sum of distances of samples to their closest cluster center
+plt.figure(figsize=(10,8))
+plt.plot(list(sse.keys()), list(sse.values()))
+plt.xlabel("Number of cluster")
+plt.ylabel("SSE")
+plt.show()
+data
+
+#SILHOUETTE SCORES FOR CLUSTERING THE DATA
+data = data.iloc[:,0:2]
+X = np.asarray(data)
+
+no_of_clusters = [2, 3, 4, 5, 6,7,8,9,10,11,12,13,14] 
+  
+for n_clusters in no_of_clusters: 
+  
+    cluster = KMeans(n_clusters = n_clusters) 
+    cluster_labels = cluster.fit_predict(X) 
+  
+    # The silhouette_score gives the  
+    # average value for all the samples. 
+    silhouette_avg = silhouette_score(X, cluster_labels) 
+  
+    print("For no of clusters =", n_clusters, 
+          " The average silhouette_score is :", silhouette_avg)
+
+### silhoutte interpretation
+    
+#0.71-1.0
+#A strong structure has been found
+
+#0.51-0.70
+#A reasonable structure has been found
+
+#0.26-0.50
+#The structure is weak and could be artificial. 
+
+#< 0.25
+#No substantial structure has been found
+
+#SELECT NO OF CLUSTER
+from sklearn.cluster import KMeans
+kmeans = KMeans(n_clusters=5, random_state=0).fit(data)
+print(kmeans.cluster_centers_)
+data.dtypes
+
+#RENAME AND SELECTING DATA
+data.columns = ["x","y"]
+data.columns.values[[0,1]] = ["x","y"]
+data.head()
+
+#DATA PLOT
+plt.scatter(data['x'], data['y'],
+c= kmeans.labels_.astype(float), s=50, alpha=0.5,cmap='rainbow')
+
+#SILHOUTTE SCORES
+from sklearn.metrics import silhouette_score
+print(silhouette_score(X, kmeans.labels_))
+df = rock.copy()
+data["clust"] = kmeans.labels_
+centroids = kmeans.cluster_centers_
+
+#EXPORT OUTCOME
+os.chdir('C:\\Users\\NEW\\Desktop\\python\\class 8 - cluster analysis')
+data.to_csv('bhulbhal.csv',index=False)#export data to local drive
